@@ -120,7 +120,7 @@ public final class TestMusicGroup {
      */
     @Test
     public void testLongest() {
-        assertEquals("When the Levee Breaks", lz.longestSong().get());
+    	assertEquals("When the Levee Breaks", lz.longestSong().get());
         assertEquals(UNTITLED, lz.longestAlbum().get());
     }
 
