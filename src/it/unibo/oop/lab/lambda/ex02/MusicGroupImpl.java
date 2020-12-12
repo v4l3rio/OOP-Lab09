@@ -44,6 +44,7 @@ public final class MusicGroupImpl implements MusicGroup {
 	public Stream<String> albumInYear(final int year) {
 		return albums.entrySet().stream().filter(t1 -> t1.getValue().equals(year)).map(t -> t.getKey());
 	}
+	
 
 	@Override
 	public int countSongs(final String albumName) {

@@ -6,7 +6,18 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.LayoutManager;
 import java.awt.Toolkit;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.StringTokenizer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -36,8 +47,37 @@ public final class LambdaFilter extends JFrame {
     private static final long serialVersionUID = 1760990730218643730L;
 
     private enum Command {
-        IDENTITY("No modifications", Function.identity());
+        IDENTITY("No modifications", Function.identity()),
+    	LOWERCASE("Convert to lowercase", String::toLowerCase),
+    	COUNTCHARS("Count number of chars", s -> Integer.toString(s.length())),
+    	COUNTLINES("Count number of lines", s -> Long.toString(s.chars()
+    			.filter( s1 -> s1 == Integer.parseInt(System.lineSeparator()))
+    			.count())),
+    	LISTOFWORD("List alla the words in alphabetical order", (String s) -> {
+    		 StringTokenizer st = new StringTokenizer(s);
 
+    		 List<String> words = Collections.list(st).stream()
+                     .map(str -> (String)str)
+                     .collect(Collectors.toList());
+    		 
+    		 Optional<String> paroleToReturn = words.stream()
+    				 .sorted(Comparator.naturalOrder())
+    				 .reduce((s1, s2) -> s1+"\n"+s2);
+    		 
+    		return paroleToReturn.orElseThrow();
+    	}),
+    	COUNTWORD("Write the count for each word", s -> {
+    		StringTokenizer st = new StringTokenizer(s);
+
+   		 	Map<String, Long> words = Collections.list(st).stream()
+                    .map(str -> (String)str)
+                    .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+   		 	
+   		 String paroleToReturn = words.keySet().stream().reduce("", (acc, key) -> acc + key + "->"+words.get(key)+"\n");
+
+    		return paroleToReturn;
+    	});
+    	
         private final String commandName;
         private final Function<String, String> fun;
 
@@ -45,6 +85,8 @@ public final class LambdaFilter extends JFrame {
             commandName = name;
             fun = process;
         }
+        
+
 
         @Override
         public String toString() {
@@ -52,8 +94,15 @@ public final class LambdaFilter extends JFrame {
         }
 
         public String translate(final String s) {
+        	
+        	String str = s.chars().sorted().toString();
+        	
             return fun.apply(s);
+            
+           
         }
+        
+
     }
 
     private LambdaFilter() {
